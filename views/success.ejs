@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+    <%- include('partials/header') %>
+
+    <div class="jumbotron jumbotron-fluid text-center my-auto">
+        <div class="container">
+            <h1 class="display-4 text-success">Success</h1>
+            <p class="lead">You've been successfully signed up to the newsletter.</p>
+
+            <form action='/success' method="post" class=" mt-5">
+                <button class=" btn btn-lg btn-success" type="submit">Add New</button>
+            </form>
+        </div>
+    </div>
+
+    <%- include('partials/footer') %>
