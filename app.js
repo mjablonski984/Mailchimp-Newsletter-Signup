@@ -2,8 +2,8 @@ if (process.env.NODE_ENV !== 'production') {
   require('dotenv').config();
 }
 
+const https = require('https');
 const express = require('express');
-const request = require('request');
 const app = express();
 
 app.set('view engine', 'ejs');
@@ -32,28 +32,30 @@ app.post('/', (req, res) => {
       }
     ]
   };
-  // Stringify (subsriber) data object
+
   const jsonData = JSON.stringify(data);
+  // url to our list(incl. list id)
+  const url = process.env.LIST_URL;
 
   const options = {
-    url: process.env.LIST_URL, // url to our list(incl. list id)
     method: 'POST',
-    headers: {
-      Authorization: process.env.AUTH_KEY // string needed for authorization (basic auth: myusername apikey)
-    },
-    body: jsonData // data posted to mailchimp
+    auth: process.env.AUTH_KEY //  (auth string : 'username:apikey')
   };
-  request(options, (error, response, body) => {
-    if (error) {
-      res.render('failure');
+
+  const request = https.request(url, options, response => {
+    if (response.statusCode === 200) {
+      res.render('success');
     } else {
-      if (response.statusCode === 200) {
-        res.render('success');
-      } else {
-        res.render('failure');
-      }
+      res.render('failure');
     }
+    response.on('data', data => {
+      console.log(JSON.parse(data));
+    });
   });
+
+  // post the data to the server
+  request.write(jsonData);
+  request.end();
 });
 
 app.post('/failure', (req, res) => {
